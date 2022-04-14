@@ -2,7 +2,7 @@
   <h1 class="font-extrabold text-5xl">Ticket Aviao</h1>
   <div class="grid grid-cols-2">
     <div
-      class="col-span-1 grid grid-cols-3 grid-rows-15 bg-gray-200 rounded-2xl m-6"
+      class="col-span-1 grid grid-cols-3 grid-rows-12 bg-gray-200 rounded-2xl m-6"
     >
       <!-- origem -->
       <label class="row-span-1 row-start-1 col-span-1 col-start-1 m-6"
@@ -53,23 +53,18 @@
         @change="
           getLocationDestination(selectedCityDestination),
             getDistance(latOrigin, longOrigin, latDestination, longDestination),
-            isTheSame(selectedCityOrigin, selectedCityDestination)
+            maxMilesCalc(getValueWithMilesAdults(), getValueWithMilesKids())
         "
         class="row-span-1 row-start-4 col-span-1 col-start-2 mx-6 my-2 w-48 h-12 text-center"
       >
       </Dropdown>
-      <span 
-      v-if="sameDest"
-      class=" delay-2000 text-sm text-red-600 row-span-1 row-start-5 col-span-2 col-start-2 mx-6 w-full h-12 text-end"
-
-      >O destino deve ser diferente da origem</span>
       <!-- quantidade -->
       <div
-        class="grid grid-cols-9 grid-rows-1 row-span-1 row-start-6 col-span-1 col-start-2 my-6"
+        class="grid grid-cols-9 grid-rows-1 row-span-1 row-start-5 col-span-1 col-start-2 my-3"
       >
         <label
           for="qtAdults"
-          class="row-span-1 row-start-1 col-span-3 col-start-1 "
+          class="row-span-1 row-start-1 col-span-3 col-start-1"
           >Adultos:
         </label>
         <InputNumber
@@ -82,6 +77,10 @@
           incrementButtonIcon="pi pi-plus"
           decrementButtonIcon="pi pi-minus"
           class="row-span-1 row-start-2 col-span-2 col-start-2"
+          @change="
+            getDistance(latOrigin, longOrigin, latDestination, longDestination),
+              maxMilesCalc(getValueWithMilesAdults(), getValueWithMilesKids())
+          "
         />
         <label
           for="qtKids"
@@ -98,17 +97,18 @@
           incrementButtonIcon="pi pi-plus"
           decrementButtonIcon="pi pi-minus"
           class="row-span-1 row-start-2 col-span-2 col-start-7"
+          @change="
+            getDistance(latOrigin, longOrigin, latDestination, longDestination),
+              maxMilesCalc(getValueWithMilesAdults(), getValueWithMilesKids())
+          "
         />
       </div>
       <!-- classe do voo  -->
-      <p class="row-span-1 row-start-7 col-span-1 col-start-1 text-center mt-3">
+      <p class="row-span-1 row-start-6 col-span-1 col-start-1 text-center mt-3">
         Tipo de voo:
       </p>
       <div class="row-span-1 row-start-8 col-span-3 col-start-1">
-        
-      </div>
-      <div class="row-span-1 row-start-9 col-span-3 col-start-1">
-         <RadioButton
+        <RadioButton
           name="flightClass"
           value="Econômica"
           v-model="flightClass"
@@ -116,62 +116,49 @@
           class="mr-2 mx-2 mb-1"
         />
         <label>Econômica</label>
-
+      </div>
+      <div class="row-span-1 row-start-8 col-span-3 col-start-1">
         <RadioButton
           name="flightClass"
           value="Executiva"
           v-model="flightClass"
           id="flightClassEx"
-          class="ml-4 mr-2 mb-1"
+          class="mr-3"
         />
-        <label class="ml-">Executiva</label>
-       
+        <label>Executiva</label>
       </div>
       <!-- milhas -->
-      <span class="row-span-1 row-start-10 col-span-3 col-start-1 mt-4 content-center	
-      ">
+      <p class="row-span-1 row-start-10 col-span-3 col-start-1 mt-4">
         <Checkbox
-          class="mr-2"
           v-model="hasMiles"
           :binary="true"
           @change="
-            getValueKids(), getValueAdult(), maxMilesCalc(valueAdult, valueKids)
+            getDistance(latOrigin, longOrigin, latDestination, longDestination),
+              maxMilesCalc(getValueWithMilesAdults(), getValueWithMilesKids())
           "
         />
+        Tenho milhas para utilizar
+      </p>
 
-        <label for="milesDisc">Tenho milhas para utilizar</label>
-      </span>
-
-      <div v-if="hasMiles"
-      class="row-span-1 row-start-11 col-span-1 col-start-1 w-80 my-4 mt-10 ml-20"
-      >
-        <Slider
-          class="my-3"
-          v-model="milesDisc"
-          :step="10"
-          :max="maxMiles"
-          :disabled="mileSlider ? '' : disabled"
-        />
-
-        <p class="row-span-1 row-start-9 col-span-3 col-start-1">
-          Utilizar {{ milesDisc.toFixed(2) }} milhas
-        </p>
-      </div>
+      <label for="milesDisc"></label>
+      <Slider
+        class="row-span-1 row-start-10 col-span-3 col-start-2 w-60 my-4 mt-10"
+        v-model="milesDisc"
+        :step="1"
+        :max="maxMiles"
+      />
+      <p class="row-span-1 row-start-9 col-span-3 col-start-1">
+        Utilizar {{ milesDisc.toFixed(2) }} milhas
+      </p>
 
       <Button
-        v-if="calcBtn"
         label="Calcular"
         class="row-span-1 row-start-9 col-span-3 col-start-1 mt-7 p-button"
-        @click="
-          getDistance(latOrigin, longOrigin, latDestination, longDestination),
-            maxMilesCalc(valueAdult, valueKids),
-            calculate()
-        "
+        @click="calculate()"
       />
       <Button
-        v-if="!calcBtn"
         label="Limpar"
-        class="row-span-1 row-start-10 col-span-3 col-start-1 mt-7 p-button-warning"
+        class="row-span-1 row-start-10 col-span-3 col-start-1 p-button-warning"
         @click="clearForm()"
       />
     </div>
@@ -231,7 +218,7 @@
         <p class="row-span-1 row-start-2 col-span-3 col-start-1">
           Valor Adulto:
           {{
-            valueAdult.toLocaleString("pt-BR", {
+            getValueWithMilesAdults().toLocaleString("pt-BR", {
               style: "currency",
               currency: "BRL",
             })
@@ -240,7 +227,7 @@
         <p class="row-span-1 row-start-3 col-span-3 col-start-1">
           Valor Criança:
           {{
-            valueKids.toLocaleString("pt-BR", {
+            getValueWithMilesKids().toLocaleString("pt-BR", {
               style: "currency",
               currency: "BRL",
             })
@@ -249,7 +236,7 @@
         <p class="row-span-1 row-start-4 col-span-3 col-start-1">
           Valor abatido por milhas:
           {{
-            milesPrice.toLocaleString("pt-BR", {
+            (milesDisc * 0.02).toLocaleString("pt-BR", {
               style: "currency",
               currency: "BRL",
             })
@@ -259,10 +246,13 @@
         <p class="row-span-1 row-start-5 col-span-3 col-start-1 font-semibold">
           Total a ser pago:
           {{
-            [sumAdultsKids(valueAdult, valueKids)].toLocaleString("pt-BR", {
-              style: "currency",
-              currency: "BRL",
-            })
+            [sumAdultsKids(adultsWithMiles, kidsWithMiles)].toLocaleString(
+              "pt-BR",
+              {
+                style: "currency",
+                currency: "BRL",
+              }
+            )
           }}
         </p>
       </div>
@@ -293,16 +283,14 @@ export default {
       qtKids: 0,
       flightClass: "Econômica",
       milesDisc: 0,
-      maxMiles: 5000,
+      maxMiles: 1,
       kmDistance: 0,
+      finalValueAdult: 0,
+      finalValueKids: 0,
+      adultsWithMiles: 0,
+      kidsWithMiles: 0,
       hasMiles: false,
-      milesPrice: 0,
-      valueKids: 0,
-      valueAdult: 0,
       finalSum: 0,
-      mileSlider: false,
-      calcBtn:true,
-      sameDest:false,
     };
   },
   methods: {
@@ -326,15 +314,7 @@ export default {
       var pi = Math.PI;
       return degrees * (pi / 180);
     },
-    isTheSame(origin, destination) {
-      if (origin == destination){
-      setTimeout(() => {this.sameDest = false},5000)
-        this.clearForm();
-        this.calcBtn = false;
-        return this.sameDest = true;
 
-      }
-    },
     getDistance(
       originLatitude,
       originLongitude,
@@ -368,15 +348,19 @@ export default {
       this.kmDistance = kmDistance;
     },
 
+    // corrigir calculo
     getValueAdult() {
       const value =
         this.selectedCountryOrigin == this.selectedCountryDestination
           ? this.kmDistance * 0.3 * this.qtAdults
           : this.kmDistance * 0.5 * this.qtAdults;
 
-      return this.flightClass == "Econômica"
-        ? (this.valueAdult = value)
-        : (this.valueAdult = value * 1.8);
+      return this.flightClass == "Econômica" ? value : value * 1.8;
+      //   this.selectedCountryOrigin == this.selectedCountryDestination
+      //     ? this.kmDistance * 0.3 * this.qtAdults
+      //     : this.kmDistance * 0.5 * this.qtAdults;
+
+      // return this.flightClass == "Econômica" ? value : value * 1.8;
     },
 
     getValueKids() {
@@ -384,48 +368,65 @@ export default {
         this.selectedCountryOrigin == this.selectedCountryDestination
           ? this.kmDistance * 0.15 * this.qtKids
           : this.kmDistance * 0.25 * this.qtKids;
-      return this.flightClass == "Econômica"
-        ? (this.valueKids = value)
-        : (this.valueKids = value * 1.4);
+      console.log(value);
+      return this.flightClass == "Econômica" ? value : value * 1.4;
+      // const value =
+      //   this.selectedCountryOrigin == this.selectedCountryDestination
+      //     ? this.kmDistance * 0.15 * this.qtKids
+      //     : this.kmDistance * 0.25 * this.qtKids;
+      // console.log(value);
+      // return this.flightClass == "Econômica" ? value : value * 1.4;
+    },
+    getValueWithMilesAdults() {
+      const valueWithMiles =
+        this.getValueAdult().toFixed(2) - this.milesDisc * 0.02;
+      this.adultsWithMiles = valueWithMiles < 0 ? 0 : valueWithMiles;
+      return this.adultsWithMiles;
+      // const valueWithMiles =
+      //   this.getValueAdult().toFixed(2) - this.milesDisc * 0.02;
+      // this.adultsWithMiles = valueWithMiles < 0 ? 0 : valueWithMiles;
+      // return this.adultsWithMiles;
+    },
+    getValueWithMilesKids() {
+      const valueWithMiles =
+        this.getValueKids().toFixed(2) - this.milesDisc * 0.02;
+      this.kidsWithMiles = valueWithMiles < 0 ? 0 : valueWithMiles;
+      return this.kidsWithMiles;
+      // const valueWithMiles =
+      //   this.getValueKids().toFixed(2) - this.milesDisc * 0.02;
+      // this.kidsWithMiles = valueWithMiles < 0 ? 0 : valueWithMiles;
+      // return this.kidsWithMiles;
     },
 
-    milesDiscPrice() {
-      const value = this.milesDisc * 0.02;
-      return (this.milesPrice = value);
-    },
+    // mexer no calculo de milha
     maxMilesCalc(adults, kids) {
-      console.log("calculo max feito");
-      console.log(adults);
-      this.getValueKids();
-      this.getValueAdult();
       const value = (adults + kids) / 0.02;
       this.maxMiles = value;
+      // const value = (adults + kids) / 0.02;
+      // this.maxMiles = value;
     },
     sumAdultsKids(adults, kids) {
-      this.finalSum = adults + kids - this.milesPrice;
+      this.finalSum = adults + kids;
       return this.finalSum;
+      // this.finalSum = adults + kids;
+      // return this.finalSum;
     },
     calculate() {
-      this.getValueKids();
-      this.getValueAdult();
-      this.milesDiscPrice();
-      this.calcBtn = !this.calcBtn;
-      const value = this.valueKids + this.valueAdult - this.milesPrice;
-      return (this.finalSum = value);
+      // açao final botao calcular
     },
     clearForm() {
-      // this.selectedCountryOrigin = "";
-      // this.selectedCountryDestination = "";
-      // this.selectedCityOrigin = "";
-      // this.selectedCityDestination = "";
-      // this.citiesOrigin = [];
-      // this.countryOrigin = "";
-      // this.countryDestination = "";
-      // this.dataCitiesDestination = [];
-      // this.latOrigin = null;
-      // this.longOrigin = null;
-      // this.latDestination = null;
-      // this.longDestination = null;
+      this.selectedCountryOrigin = "";
+      this.selectedCountryDestination = "";
+      this.selectedCityOrigin = "";
+      this.selectedCityDestination = "";
+      this.citiesOrigin = [];
+      this.countryOrigin = "";
+      this.countryDestination = "";
+      this.dataCitiesDestination = [];
+      this.latOrigin = null;
+      this.longOrigin = null;
+      this.latDestination = null;
+      this.longDestination = null;
       this.qtAdults = 1;
       this.qtKids = 0;
       this.flightClass = "Econômica";
@@ -438,10 +439,6 @@ export default {
       this.kidsWithMiles = 0;
       this.hasMiles = false;
       this.finalSum = 0;
-      this.calcBtn = true;
-      this.sameDest = false,
-      this.cleanBtn = !this.cleanBtn;
-
       return;
     },
   },
