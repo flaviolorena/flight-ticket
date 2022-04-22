@@ -60,7 +60,7 @@
       </Dropdown>
       <span 
       v-if="sameDest"
-      class=" delay-2000 text-sm text-red-600 row-span-1 row-start-5 col-span-2 col-start-2 mx-6 w-full h-12 text-end"
+      class=" delay-2000 text-sm text-red-600 row-span-1 row-start-5 col-span-3 col-start-1 mx-6 w-full h-12 text-center content-center mx-auto"
 
       >O destino deve ser diferente da origem</span>
       <!-- quantidade -->
@@ -76,6 +76,7 @@
           v-model="qtAdults"
           mode="decimal"
           showButtons
+          min="1"
           buttonLayout="vertical"
           decrementButtonClass="p-button-secondary"
           incrementButtonClass="p-button-secondary"
@@ -92,6 +93,7 @@
           v-model="qtKids"
           mode="decimal"
           showButtons
+          min="0"
           buttonLayout="vertical"
           decrementButtonClass="p-button-secondary"
           incrementButtonClass="p-button-secondary"
@@ -143,7 +145,7 @@
       </span>
 
       <div v-if="hasMiles"
-      class="row-span-1 row-start-11 col-span-1 col-start-1 w-80 my-4 mt-10 ml-20"
+      class="row-span-1 row-start-11 col-span-3 col-start-1 mt-4 mx-auto content-center"
       >
         <Slider
           class="my-3"
@@ -153,7 +155,7 @@
           :disabled="mileSlider ? '' : disabled"
         />
 
-        <p class="row-span-1 row-start-9 col-span-3 col-start-1">
+        <p class="row-span-1 row-start-12 col-span-3 col-start-1">
           Utilizar {{ milesDisc.toFixed(2) }} milhas
         </p>
       </div>
@@ -293,7 +295,7 @@ export default {
       qtKids: 0,
       flightClass: "Econômica",
       milesDisc: 0,
-      maxMiles: 5000,
+      maxMiles: null,
       kmDistance: 0,
       hasMiles: false,
       milesPrice: 0,
@@ -414,33 +416,22 @@ export default {
       return (this.finalSum = value);
     },
     clearForm() {
-      // this.selectedCountryOrigin = "";
-      // this.selectedCountryDestination = "";
-      // this.selectedCityOrigin = "";
-      // this.selectedCityDestination = "";
-      // this.citiesOrigin = [];
-      // this.countryOrigin = "";
-      // this.countryDestination = "";
-      // this.dataCitiesDestination = [];
-      // this.latOrigin = null;
-      // this.longOrigin = null;
-      // this.latDestination = null;
-      // this.longDestination = null;
       this.qtAdults = 1;
       this.qtKids = 0;
       this.flightClass = "Econômica";
       this.milesDisc = 0;
-      this.maxMiles = 1;
+      this.maxMiles = null;
       this.kmDistance = 0;
-      this.finalValueAdult = 0;
-      this.finalValueKids = 0;
-      this.adultsWithMiles = 0;
-      this.kidsWithMiles = 0;
       this.hasMiles = false;
+      this.milesPrice= 0;
+      this.valueKids= 0;
+      this.valueAdult= 0;
+      this.finalSum= 0;
       this.finalSum = 0;
       this.calcBtn = true;
       this.sameDest = false,
       this.cleanBtn = !this.cleanBtn;
+
 
       return;
     },
